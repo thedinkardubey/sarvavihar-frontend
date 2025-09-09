@@ -15,6 +15,8 @@ This guide provides instructions for deploying the Sarvavihar e-commerce applica
 
 ## Backend Deployment
 
+### Vercel Deployment
+
 1. **Push your code to GitHub** (if not already done)
 
 2. **Set up environment variables in Vercel**:
@@ -35,6 +37,29 @@ This guide provides instructions for deploying the Sarvavihar e-commerce applica
      - Development Command: `npm run dev`
    - Add the environment variables
    - Deploy
+
+### Render Deployment
+
+1. **Push your code to GitHub** (if not already done)
+
+2. **Deploy to Render**:
+   - Go to [Render](https://render.com)
+   - Click "New" > "Web Service"
+   - Connect your GitHub repository
+   - Configure the project:
+     - Name: `sarvavihar-backend` (or your preferred name)
+     - Runtime: Node
+     - Build Command: `npm install`
+     - Start Command: `node server.js` (or your entry point)
+   - Add the environment variables:
+     - `MONGODB_URI`: Your MongoDB Atlas connection string
+     - `JWT_SECRET`: Secret key for JWT token generation
+     - `JWT_REFRESH_SECRET`: Secret key for refresh tokens
+     - `JWT_EXPIRE`: Token expiration time (e.g., "15m")
+     - `JWT_REFRESH_EXPIRE`: Refresh token expiration (e.g., "7d")
+     - `FRONTEND_URL`: URL of your deployed frontend
+     - `PORT`: 10000 (Render will use this port)
+   - Click "Create Web Service"
 
 ## Frontend Deployment
 
@@ -115,5 +140,5 @@ If your build fails on Render:
 After making changes to your code:
 
 1. Push changes to GitHub
-2. Vercel will automatically redeploy if you've set up automatic deployments
-3. Alternatively, trigger a manual redeployment from the Vercel dashboard
+2. Vercel or Render will automatically redeploy if you've set up automatic deployments
+3. Alternatively, trigger a manual redeployment from the Vercel or Render dashboard
