@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide provides instructions for deploying the Sarvavihar e-commerce application on Vercel. The application consists of two parts:
+This guide provides instructions for deploying the Sarvavihar e-commerce application on Vercel or Render. The application consists of two parts:
 
 1. **Frontend**: React application
 2. **Backend**: Node.js/Express API
@@ -46,6 +46,8 @@ This guide provides instructions for deploying the Sarvavihar e-commerce applica
 
 2. **Push your code to GitHub** (if not already done)
 
+### Vercel Deployment
+
 3. **Deploy to Vercel**:
    - Go to [Vercel](https://vercel.com)
    - Import your frontend repository
@@ -58,6 +60,20 @@ This guide provides instructions for deploying the Sarvavihar e-commerce applica
    - Add the environment variables:
      - `REACT_APP_API_URL`: URL of your deployed backend
    - Deploy
+
+### Render Deployment
+
+3. **Deploy to Render**:
+   - Go to [Render](https://render.com)
+   - Click "New" > "Static Site"
+   - Connect your GitHub repository
+   - Configure the project:
+     - Name: `sarvavihar-frontend` (or your preferred name)
+     - Build Command: `npm install && npm run build`
+     - Publish Directory: `build`
+   - Add the environment variables:
+     - `REACT_APP_API_URL`: URL of your deployed backend
+   - Click "Create Static Site"
 
 ## Troubleshooting
 
@@ -79,9 +95,20 @@ This guide provides instructions for deploying the Sarvavihar e-commerce applica
    - Ensure MongoDB Atlas connection is working
    - Check backend logs for database connection issues
 
-5. **Vercel logs**:
-   - Check deployment logs in Vercel for both frontend and backend
+5. **Deployment logs**:
+   - Check deployment logs in Vercel or Render for both frontend and backend
    - Look for any build or runtime errors
+
+### Build Failures on Render
+
+If your build fails on Render:
+
+1. Check the build logs for specific error messages
+2. Ensure that all dependencies are properly listed in package.json
+3. Verify that the Node.js version is compatible
+   - We've included a `.node-version` file specifying Node.js 18.18.0
+   - Alternatively, you can set the `NODE_VERSION` environment variable in Render
+4. Make sure the build and start commands are correct
 
 ## Redeployment
 
