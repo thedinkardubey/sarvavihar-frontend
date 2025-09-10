@@ -51,9 +51,11 @@ export const ERROR_MESSAGES = {
     FETCH_CATEGORIES_FAILED: 'Failed to load categories'
   },
   NETWORK: {
-    GENERIC: 'Network error. Please check your connection.',
+    GENERIC: 'Network error. Please check your connection. The app will automatically retry connecting.',
     TIMEOUT: 'Request timeout. Please try again.',
-    SERVER_ERROR: 'Server error. Please try again later.'
+    SERVER_ERROR: 'Server error. Please try again later.',
+    RETRY_ATTEMPT: (attempt, max) => `Connection attempt ${attempt} of ${max}...`,
+    RETRY_SUCCESS: 'Connection restored!'
   }
 };
 

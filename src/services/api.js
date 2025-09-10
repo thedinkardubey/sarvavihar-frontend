@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { API_ENDPOINTS, STORAGE_KEYS, TIMEOUTS, HTTP_STATUS } from '../constants';
-import { handleApiError, removeStorageItem } from '../utils';
+import { API_ENDPOINTS, STORAGE_KEYS, TIMEOUTS, HTTP_STATUS, ERROR_MESSAGES } from '../constants';
+import { handleApiError, removeStorageItem, showToast } from '../utils';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -8,7 +8,10 @@ const api = axios.create({
   timeout: TIMEOUTS.DEFAULT,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  // Add retry configuration
+  retry: 3,
+  retryDelay: 1000
 });
 
 // Request interceptor to add auth token
@@ -25,6 +28,65 @@ api.interceptors.request.use(
   }
 );
 
+// Implement retry mechanism
+const retryAxios = async (config) => {
+  const { retry = 3, retryDelay = 1000 } = config;
+  let retries = 0;
+  let hadNetworkError = false;
+  
+  const makeRequest = async () => {
+    try {
+      const result = await axios(config);
+      
+      // If we previously had a network error and now succeeded, show success message
+      if (hadNetworkError && retries > 0) {
+        showToast(ERROR_MESSAGES.NETWORK.RETRY_SUCCESS, 'success');
+      }
+      
+      return result;
+    } catch (error) {
+      // Only retry on network errors, not on response errors
+      if (!error.response && retries < retry) {
+        hadNetworkError = true;
+        retries++;
+        console.log(`Retrying request (${retries}/${retry})`);
+        
+        // Show retry attempt toast
+        showToast(ERROR_MESSAGES.NETWORK.RETRY_ATTEMPT(retries, retry), 'info');
+        
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        return makeRequest();
+      }
+      throw error;
+    }
+  };
+  
+  return makeRequest();
+};
+
+// Override axios methods to use our retry mechanism
+const originalRequest = api.request;
+api.request = function(config) {
+  return retryAxios({ ...config, baseURL: this.defaults.baseURL });
+};
+
+// Override common request methods
+['get', 'post', 'put', 'delete', 'patch'].forEach(method => {
+  const originalMethod = api[method];
+  api[method] = function(url, ...args) {
+    const config = method === 'get' || method === 'delete' 
+      ? args[0] 
+      : args[1];
+    return retryAxios({ 
+      url, 
+      method, 
+      ...config, 
+      data: method !== 'get' && method !== 'delete' ? args[0] : undefined,
+      baseURL: this.defaults.baseURL 
+    });
+  };
+});
+
 // Response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
@@ -38,6 +100,16 @@ api.interceptors.response.use(
         window.location.href = '/login';
       }
     }
+    
+    // Improved network error handling
+    if (!error.response && error.message === 'Network Error') {
+      console.error('Network connection error:', error);
+      showToast(ERROR_MESSAGES.NETWORK.GENERIC, 'error');
+      
+      // Retry logic is handled by the retryAxios function
+      // This interceptor just shows the error message
+    }
+    
     return Promise.reject(error);
   }
 );
