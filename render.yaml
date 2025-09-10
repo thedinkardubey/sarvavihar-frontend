@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: sarvavihar-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://sarvavihar-backend.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

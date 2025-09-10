@@ -97,8 +97,16 @@ This guide provides instructions for deploying the Sarvavihar e-commerce applica
      - Build Command: `npm install && npm run build`
      - Publish Directory: `build`
    - Add the environment variables:
-     - `REACT_APP_API_URL`: URL of your deployed backend
+     - `REACT_APP_API_URL`: URL of your deployed backend (e.g., `https://sarvavihar-backend.onrender.com`)
    - Click "Create Static Site"
+
+4. **Configuration Files**:
+   We've added several configuration files to ensure proper deployment:
+   - `render.yaml`: Defines the service configuration for Render
+   - `static.json`: Configures routing for the static site
+   - `.node-version`: Specifies Node.js 18.18.0 for compatibility
+
+   These files should be automatically detected by Render during deployment.
 
 ## Troubleshooting
 
